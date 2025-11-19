@@ -395,17 +395,6 @@
       <td><input id="cri-mlmin-ephedrine" class="output-number" readonly /></td>
       <td><input id="cri-mlhr-ephedrine" class="output-number" readonly /></td>
     </tr>
-
-    <!-- Epinephrine -->
-    <tr>
-      <td>Epinephrine</td>
-      <td>0.05–0.4 mcg</td>
-      <td><input id="cri-dose-epinephrine" type="number" step="0.01" value="0.1" class="input-number" /></td>
-      <td><input id="cri-mg-epinephrine" class="output-number" readonly /></td>
-      <td>1</td>
-      <td><input id="cri-mlmin-epinephrine" class="output-number" readonly /></td>
-      <td><input id="cri-mlhr-epinephrine" class="output-number" readonly /></td>
-    </tr>
   </table>
 
   <br />
@@ -434,7 +423,9 @@
 
     <tr>
       <td>BOLUS</td>
-      <td>10 mL/kg</td>
+      <td>
+        <input id="cri-fluid-range-bolus" type="number" step="0.1" value="10" class="input-number" /> mL/kg
+      </td>
       <td><input id="cri-fluid-dose-bolus" type="number" step="0.1" value="10" class="input-number" /></td>
       <td><input id="cri-fluid-mlhr-bolus" class="output-number" readonly /></td>
     </tr>
@@ -498,7 +489,7 @@ drugs.forEach(d => {
   if (d.concId) document.getElementById(d.concId).addEventListener("change", recalcDoses);
 });
 
-/* ---------- CRI TAB DATA ---------- */
+/* ---------- CRI TAB DATA (no epinephrine) ---------- */
 const criDrugs = [
   {
     doseId: "cri-dose-dopamine",
@@ -520,13 +511,6 @@ const criDrugs = [
     mlMinId: "cri-mlmin-ephedrine",
     mlHrId: "cri-mlhr-ephedrine",
     conc: 1
-  },
-  {
-    doseId: "cri-dose-epinephrine",
-    mgId: "cri-mg-epinephrine",
-    mlMinId: "cri-mlmin-epinephrine",
-    mlHrId: "cri-mlhr-epinephrine",
-    conc: 1
   }
 ];
 
@@ -542,7 +526,7 @@ function recalcCRI() {
   // Drugs: mg/min, mL/min, mL/hr
   criDrugs.forEach(d => {
     const dose = parseFloat(document.getElementById(d.doseId).value) || 0;
-    const mgPerMin = wt * dose;              // mg/min (or "mcg/min" in same units)
+    const mgPerMin = wt * dose;              // mg/min (or same units as dose)
     const mlPerMin = d.conc ? mgPerMin / d.conc : 0;
     const mlPerHr  = mlPerMin * 60;
 

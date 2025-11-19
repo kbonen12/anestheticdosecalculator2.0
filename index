@@ -1,0 +1,62 @@
+<script>
+  const drugs = [
+    { doseId: "dose-atropine", mgId: "mg-atropine", mlId: "ml-atropine", concId: "conc-atropine" },
+    { doseId: "dose-glycopyrrolate", mgId: "mg-glycopyrrolate", mlId: "ml-glycopyrrolate", concFixed: 0.2 },
+
+    { doseId: "dose-acepromazine", mgId: "mg-acepromazine", mlId: "ml-acepromazine", concFixed: 1 },
+    { doseId: "dose-diazepam", mgId: "mg-diazepam", mlId: "ml-diazepam", concFixed: 5 },
+    { doseId: "dose-midazolam", mgId: "mg-midazolam", mlId: "ml-midazolam", concFixed: 5 },
+
+    { doseId: "dose-buprenorphine", mgId: "mg-buprenorphine", mlId: "ml-buprenorphine", concId: "conc-buprenorphine" },
+
+    { doseId: "dose-butorphanol", mgId: "mg-butorphanol", mlId: "ml-butorphanol", concFixed: 10 },
+    { doseId: "dose-fentanyl", mgId: "mg-fentanyl", mlId: "ml-fentanyl", concFixed: 0.05 },
+    { doseId: "dose-morphine", mgId: "mg-morphine", mlId: "ml-morphine", concFixed: 10 },
+    { doseId: "dose-hydromorphone", mgId: "mg-hydromorphone", mlId: "ml-hydromorphone", concFixed: 2 },
+    { doseId: "dose-methadone", mgId: "mg-methadone", mlId: "ml-methadone", concFixed: 10 },
+
+    { doseId: "dose-dexmedetomidine", mgId: "mg-dexmedetomidine", mlId: "ml-dexmedetomidine", concId: "conc-dexmedetomidine" },
+
+    { doseId: "dose-propofol", mgId: "mg-propofol", mlId: "ml-propofol", concFixed: 10 },
+    { doseId: "dose-ketamine", mgId: "mg-ketamine", mlId: "ml-ketamine", concFixed: 100 },
+    { doseId: "dose-etomidate", mgId: "mg-etomidate", mlId: "ml-etomidate", concFixed: 2 },
+    { doseId: "dose-alfaxalone", mgId: "mg-alfaxalone", mlId: "ml-alfaxalone", concFixed: 10 },
+
+    { doseId: "dose-carprofen", mgId: "mg-carprofen", mlId: "ml-carprofen", concFixed: 50 },
+    { doseId: "dose-ondansetron", mgId: "mg-ondansetron", mlId: "ml-ondansetron", concFixed: 2 },
+    { doseId: "dose-bupivacaine", mgId: "mg-bupivacaine", mlId: "ml-bupivacaine", concFixed: 7.5 },
+
+    { doseId: "dose-lidocaine", mgId: "mg-lidocaine", mlId: "ml-lidocaine", concId: "conc-lidocaine" }
+  ];
+
+  function recalc() {
+    const wt = parseFloat(document.getElementById("patientWeight").value) || 0;
+
+    drugs.forEach(d => {
+      const dose = parseFloat(document.getElementById(d.doseId).value) || 0;
+      const mgOutput = document.getElementById(d.mgId);
+      const mlOutput = document.getElementById(d.mlId);
+
+      // mg = weight * dose
+      const mg = wt * dose;
+
+      // concentration (from dropdown OR fixed)
+      let conc = d.concFixed || parseFloat(document.getElementById(d.concId).value);
+
+      // mL = mg / conc
+      const ml = conc ? mg / conc : 0;
+
+      mgOutput.value = mg.toFixed(2);
+      mlOutput.value = ml.toFixed(3);
+    });
+  }
+
+  document.getElementById("patientWeight").addEventListener("input", recalc);
+
+  drugs.forEach(d => {
+    document.getElementById(d.doseId).addEventListener("input", recalc);
+    if (d.concId) document.getElementById(d.concId).addEventListener("change", recalc);
+  });
+
+  recalc();
+</script>

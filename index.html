@@ -1,62 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Small Animal Anesthesia Dose Calculator</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+h1 { margin-bottom: 0.3rem; }
+.note { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
+table { border-collapse: collapse; width: 100%; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 4px 6px; font-size: 0.85rem; text-align: left; }
+th { background: #e0e0e0; }
+.section-header { background: #ffd6d6; font-weight: bold; }
+.sub-header { background: #f0f0ff; font-style: italic; }
+.patient-row th { background: #fbe5d6; }
+.input-number { width: 70px; padding: 2px 3px; background: #ffe6b5; }
+.output-number { width: 70px; padding: 2px 3px; background: #c6efce; }
+/* Make dropdowns wider so mg/mL text is not cut off */
+select.input-number { width: 130px; }
+</style>
+</head>
+<body>
+
+<h1>Small Animal Anesthesia Dose Calculator</h1>
+<div class="note">
+  Change the <strong>orange</strong> cells (Patient Wt &amp; Actual Dose).  
+  The <strong>green</strong> cells calculate automatically.
+</div>
+
+<table>
+  <tr class="patient-row">
+    <th>Patient Wt</th>
+    <th colspan="7">
+      <input id="patientWeight" type="number" step="0.01" value="4.5" class="input-number" /> (kg)
+    </th>
+  </tr>
+
+  <tr>
+    <th>Category</th>
+    <th>Drug</th>
+    <th>Route</th>
+    <th>Dose Range (/kg)</th>
+    <th>Actual Dose</th>
+    <th>mg</th>
+    <th>Concentration</th>
+    <th>mL</th>
+  </tr>
+
+  <!-- PREMEDICATIONS -->
+  <tr><td class="section-header" colspan="8">Premedications</td></tr>
+  <tr><td class="sub-header" colspan="8">Anticholinergics</td></tr>
+
+  <!-- Atropine -->
+  <tr>
+    <td></td>
+    <td>Atropine</td>
+    <td>IM, SQ, IV</td>
+    <td>0.01–0.04</td>
+    <td><input id="dose-atropine" type="number" step="0.001" value="0.01" class="input-number" /></td>
+    <td><input id="mg-atropine" class="output-number" readonly /></td>
+    <td>
+      <select id="conc-atropine" class="input-number">
+        <option value="0.54">0.54 mg/mL</option>
+        <option value="0.4">0.4 mg/mL</option>
+        <option value="1">1 mg/mL</option>
+      </select>
+    </td>
+    <td><input id="ml-atropine" class="output-number" readonly /></td>
+  </tr>
+
+  <!-- Glycopyrrolate -->
+  <tr>
+    <td></td>
+    <td>Glycopyrrolate</td>
+    <td>IM, SQ, IV</td>
+    <td>0.005–0.02</td>
+    <td><input id="dose-glycopyrrolate" type="number" step="0.001" value="0.005" class="input-number" /></td>
+    <td><input id="mg-glycopyrrolate" class="output-number" readonly /></td>
+    <td>0.2 mg/mL</td>
+    <td><input id="ml-glycopyrrolate" class="output-number" readonly /></td>
+  </tr>
+
+  <!-- Tranquilizers -->
+  <tr><td class="sub-header" colspan="8">Tranquilizers</td></tr>
+
+  <tr>
+    <td></td>
+    <td>Acepromazine</td>
+    <td>IM, SQ, IV</td>
+    <td>0.01–0.05</td>
+    <td><input id="dose-acepromazine" type="number" step="0.001" value="0.02" class="input-number" /></td>
+    <td><input id="mg-acepromazine" class="output-number" readonly /></td>
+    <td>1 mg/mL</td>
+    <td><input id="ml-acepromazine" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Diazepam</td>
+    <td>IV</td>
+    <td>0.1–0.5</td>
+    <td><input id="dose-diazepam" type="number" step="0.01" value="0.1" class="input-number" /></td>
+    <td><input id="mg-diazepam" class="output-number" readonly /></td>
+    <td>5 mg/mL</td>
+    <td><input id="ml-diazepam" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Midazolam</td>
+    <td>IM, SQ, IV</td>
+    <td>0.1–0.5</td>
+    <td><input id="dose-midazolam" type="number" step="0.01" value="0.3" class="input-number" /></td>
+    <td><input id="mg-midazolam" class="output-number" readonly /></td>
+    <td>5 mg/mL</td>
+    <td><input id="ml-midazolam" class="output-number" readonly /></td>
+  </tr>
+
+  <!-- Opioids -->
+  <tr><td class="sub-header" colspan="8">Opioids</td></tr>
+
+  <tr>
+    <td></td>
+    <td>Buprenorphine</td>
+    <td>IM, SQ, IV, OTM</td>
+    <td>0.01–0.04</td>
+    <td><input id="dose-buprenorphine" type="number" step="0.001" value="0.04" class="input-number" /></td>
+    <td><input id="mg-buprenorphine" class="output-number" readonly /></td>
+    <td>
+      <select id="conc-buprenorphine" class="input-number">
+        <option value="0.3">0.3 mg/mL</option>
+        <option value="1.8">1.8 mg/mL</option>
+      </select>
+    </td>
+    <td><input id="ml-buprenorphine" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Butorphanol</td>
+    <td>IM, SQ, IV</td>
+    <td>0.2–0.8</td>
+    <td><input id="dose-butorphanol" type="number" step="0.01" value="0.2" class="input-number" /></td>
+    <td><input id="mg-butorphanol" class="output-number" readonly /></td>
+    <td>10 mg/mL</td>
+    <td><input id="ml-butorphanol" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Fentanyl</td>
+    <td>IM, SQ, IV</td>
+    <td>0.002–0.01</td>
+    <td><input id="dose-fentanyl" type="number" step="0.001" value="0.002" class="input-number" /></td>
+    <td><input id="mg-fentanyl" class="output-number" readonly /></td>
+    <td>0.05 mg/mL</td>
+    <td><input id="ml-fentanyl" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Morphine</td>
+    <td>IM, SQ, IV</td>
+    <td>0.01–1.0</td>
+    <td><input id="dose-morphine" type="number" step="0.01" value="0.1" class="input-number" /></td>
+    <td><input id="mg-morphine" class="output-number" readonly /></td>
+    <td>10 mg/mL</td>
+    <td><input id="ml-morphine" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Hydromorphone</td>
+    <td>IM, SQ, IV</td>
+    <td>0.05–0.2</td>
+    <td><input id="dose-hydromorphone" type="number" step="0.01" value="0.05" class="input-number" /></td>
+    <td><input id="mg-hydromorphone" class="output-number" readonly /></td>
+    <td>2 mg/mL</td>
+    <td><input id="ml-hydromorphone" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Methadone</td>
+    <td>IM, SQ, IV</td>
+    <td>0.1–0.7</td>
+    <td><input id="dose-methadone" type="number" step="0.01" value="0.5" class="input-number" /></td>
+    <td><input id="mg-methadone" class="output-number" readonly /></td>
+    <td>10 mg/mL</td>
+    <td><input id="ml-methadone" class="output-number" readonly /></td>
+  </tr>
+
+  <!-- Alpha-2 Agonists -->
+  <tr><td class="sub-header" colspan="8">Alpha-2 Agonists</td></tr>
+
+  <tr>
+    <td></td>
+    <td>Dexmedetomidine</td>
+    <td>IM, SQ, IV</td>
+    <td>0.001–0.02</td>
+    <td><input id="dose-dexmedetomidine" type="number" step="0.001" value="0.005" class="input-number" /></td>
+    <td><input id="mg-dexmedetomidine" class="output-number" readonly /></td>
+    <td>
+      <select id="conc-dexmedetomidine" class="input-number">
+        <option value="0.5">0.5 mg/mL</option>
+        <option value="10">10 mg/mL</option>
+        <option value="0.1">0.1 mg/mL</option>
+      </select>
+    </td>
+    <td><input id="ml-dexmedetomidine" class="output-number" readonly /></td>
+  </tr>
+
+  <!-- Induction Agents -->
+  <tr><td class="section-header" colspan="8">Induction Agents</td></tr>
+
+  <tr>
+    <td></td>
+    <td>Propofol</td>
+    <td>IV</td>
+    <td>2–8</td>
+    <td><input id="dose-propofol" type="number" step="0.1" value="5" class="input-number" /></td>
+    <td><input id="mg-propofol" class="output-number" readonly /></td>
+    <td>10 mg/mL</td>
+    <td><input id="ml-propofol" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Ketamine</td>
+    <td>IV, IM</td>
+    <td>5–7</td>
+    <td><input id="dose-ketamine" type="number" step="0.1" value="6" class="input-number" /></td>
+    <td><input id="mg-ketamine" class="output-number" readonly /></td>
+    <td>100 mg/mL</td>
+    <td><input id="ml-ketamine" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Etomidate</td>
+    <td>IV</td>
+    <td>0.5–1.5</td>
+    <td><input id="dose-etomidate" type="number" step="0.01" value="0.1" class="input-number" /></td>
+    <td><input id="mg-etomidate" class="output-number" readonly /></td>
+    <td>2 mg/mL</td>
+    <td><input id="ml-etomidate" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Alfaxalone</td>
+    <td>IV, IM</td>
+    <td>2–5</td>
+    <td><input id="dose-alfaxalone" type="number" step="0.1" value="5" class="input-number" /></td>
+    <td><input id="mg-alfaxalone" class="output-number" readonly /></td>
+    <td>10 mg/mL</td>
+    <td><input id="ml-alfaxalone" class="output-number" readonly /></td>
+  </tr>
+
+  <!-- Additionals -->
+  <tr><td class="section-header" colspan="8">Additionals</td></tr>
+
+  <tr>
+    <td></td>
+    <td>Carprofen</td>
+    <td>SQ</td>
+    <td>2.2–4.4 (dog), 1.1–2.2 (cat)</td>
+    <td><input id="dose-carprofen" type="number" step="0.1" value="2.2" class="input-number" /></td>
+    <td><input id="mg-carprofen" class="output-number" readonly /></td>
+    <td>50 mg/mL</td>
+    <td><input id="ml-carprofen" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Ondansetron</td>
+    <td>IV</td>
+    <td>0.5</td>
+    <td><input id="dose-ondansetron" type="number" step="0.01" value="0.5" class="input-number" /></td>
+    <td><input id="mg-ondansetron" class="output-number" readonly /></td>
+    <td>2 mg/mL</td>
+    <td><input id="ml-ondansetron" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Bupivacaine</td>
+    <td>Block</td>
+    <td>&lt; 2 mg/kg (dog), &lt; 1 mg/kg (cat)</td>
+    <td><input id="dose-bupivacaine" type="number" step="0.1" value="2" class="input-number" /></td>
+    <td><input id="mg-bupivacaine" class="output-number" readonly /></td>
+    <td>7.5 mg/mL</td>
+    <td><input id="ml-bupivacaine" class="output-number" readonly /></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Lidocaine</td>
+    <td>Testicular Block</td>
+    <td>&lt; 4 mg/kg (dog), &lt; 2 mg/kg (cat)</td>
+    <td><input id="dose-lidocaine" type="number" step="0.1" value="4" class="input-number" /></td>
+    <td><input id="mg-lidocaine" class="output-number" readonly /></td>
+    <td>
+      <select id="conc-lidocaine" class="input-number">
+        <option value="20">20 mg/mL</option>
+        <option value="10">10 mg/mL</option>
+      </select>
+    </td>
+    <td><input id="ml-lidocaine" class="output-number" readonly /></td>
+  </tr>
+</table>
+
 <script>
-  const drugs = [
-    { doseId: "dose-atropine", mgId: "mg-atropine", mlId: "ml-atropine", concId: "conc-atropine" },
-    { doseId: "dose-glycopyrrolate", mgId: "mg-glycopyrrolate", mlId: "ml-glycopyrrolate", concFixed: 0.2 },
+const drugs = [
+  { doseId: "dose-atropine", mgId: "mg-atropine", mlId: "ml-atropine", concId: "conc-atropine" },
+  { doseId: "dose-glycopyrrolate", mgId: "mg-glycopyrrolate", mlId: "ml-glycopyrrolate", concFixed: 0.2 },
 
-    { doseId: "dose-acepromazine", mgId: "mg-acepromazine", mlId: "ml-acepromazine", concFixed: 1 },
-    { doseId: "dose-diazepam", mgId: "mg-diazepam", mlId: "ml-diazepam", concFixed: 5 },
-    { doseId: "dose-midazolam", mgId: "mg-midazolam", mlId: "ml-midazolam", concFixed: 5 },
+  { doseId: "dose-acepromazine", mgId: "mg-acepromazine", mlId: "ml-acepromazine", concFixed: 1 },
+  { doseId: "dose-diazepam", mgId: "mg-diazepam", mlId: "ml-diazepam", concFixed: 5 },
+  { doseId: "dose-midazolam", mgId: "mg-midazolam", mlId: "ml-midazolam", concFixed: 5 },
 
-    { doseId: "dose-buprenorphine", mgId: "mg-buprenorphine", mlId: "ml-buprenorphine", concId: "conc-buprenorphine" },
+  { doseId: "dose-buprenorphine", mgId: "mg-buprenorphine", mlId: "ml-buprenorphine", concId: "conc-buprenorphine" },
 
-    { doseId: "dose-butorphanol", mgId: "mg-butorphanol", mlId: "ml-butorphanol", concFixed: 10 },
-    { doseId: "dose-fentanyl", mgId: "mg-fentanyl", mlId: "ml-fentanyl", concFixed: 0.05 },
-    { doseId: "dose-morphine", mgId: "mg-morphine", mlId: "ml-morphine", concFixed: 10 },
-    { doseId: "dose-hydromorphone", mgId: "mg-hydromorphone", mlId: "ml-hydromorphone", concFixed: 2 },
-    { doseId: "dose-methadone", mgId: "mg-methadone", mlId: "ml-methadone", concFixed: 10 },
+  { doseId: "dose-butorphanol", mgId: "mg-butorphanol", mlId: "ml-butorphanol", concFixed: 10 },
+  { doseId: "dose-fentanyl", mgId: "mg-fentanyl", mlId: "ml-fentanyl", concFixed: 0.05 },
+  { doseId: "dose-morphine", mgId: "mg-morphine", mlId: "ml-morphine", concFixed: 10 },
+  { doseId: "dose-hydromorphone", mgId: "mg-hydromorphone", mlId: "ml-hydromorphone", concFixed: 2 },
+  { doseId: "dose-methadone", mgId: "mg-methadone", mlId: "ml-methadone", concFixed: 10 },
 
-    { doseId: "dose-dexmedetomidine", mgId: "mg-dexmedetomidine", mlId: "ml-dexmedetomidine", concId: "conc-dexmedetomidine" },
+  { doseId: "dose-dexmedetomidine", mgId: "mg-dexmedetomidine", mlId: "ml-dexmedetomidine", concId: "conc-dexmedetomidine" },
 
-    { doseId: "dose-propofol", mgId: "mg-propofol", mlId: "ml-propofol", concFixed: 10 },
-    { doseId: "dose-ketamine", mgId: "mg-ketamine", mlId: "ml-ketamine", concFixed: 100 },
-    { doseId: "dose-etomidate", mgId: "mg-etomidate", mlId: "ml-etomidate", concFixed: 2 },
-    { doseId: "dose-alfaxalone", mgId: "mg-alfaxalone", mlId: "ml-alfaxalone", concFixed: 10 },
+  { doseId: "dose-propofol", mgId: "mg-propofol", mlId: "ml-propofol", concFixed: 10 },
+  { doseId: "dose-ketamine", mgId: "mg-ketamine", mlId: "ml-ketamine", concFixed: 100 },
+  { doseId: "dose-etomidate", mgId: "mg-etomidate", mlId: "ml-etomidate", concFixed: 2 },
+  { doseId: "dose-alfaxalone", mgId: "mg-alfaxalone", mlId: "ml-alfaxalone", concFixed: 10 },
 
-    { doseId: "dose-carprofen", mgId: "mg-carprofen", mlId: "ml-carprofen", concFixed: 50 },
-    { doseId: "dose-ondansetron", mgId: "mg-ondansetron", mlId: "ml-ondansetron", concFixed: 2 },
-    { doseId: "dose-bupivacaine", mgId: "mg-bupivacaine", mlId: "ml-bupivacaine", concFixed: 7.5 },
+  { doseId: "dose-carprofen", mgId: "mg-carprofen", mlId: "ml-carprofen", concFixed: 50 },
+  { doseId: "dose-ondansetron", mgId: "mg-ondansetron", mlId: "ml-ondansetron", concFixed: 2 },
 
-    { doseId: "dose-lidocaine", mgId: "mg-lidocaine", mlId: "ml-lidocaine", concId: "conc-lidocaine" }
-  ];
+  { doseId: "dose-bupivacaine", mgId: "mg-bupivacaine", mlId: "ml-bupivacaine", concFixed: 7.5 },
 
-  function recalc() {
-    const wt = parseFloat(document.getElementById("patientWeight").value) || 0;
+  { doseId: "dose-lidocaine", mgId: "mg-lidocaine", mlId: "ml-lidocaine", concId: "conc-lidocaine" }
+];
 
-    drugs.forEach(d => {
-      const dose = parseFloat(document.getElementById(d.doseId).value) || 0;
-      const mgOutput = document.getElementById(d.mgId);
-      const mlOutput = document.getElementById(d.mlId);
-
-      // mg = weight * dose
-      const mg = wt * dose;
-
-      // concentration (from dropdown OR fixed)
-      let conc = d.concFixed || parseFloat(document.getElementById(d.concId).value);
-
-      // mL = mg / conc
-      const ml = conc ? mg / conc : 0;
-
-      mgOutput.value = mg.toFixed(2);
-      mlOutput.value = ml.toFixed(3);
-    });
-  }
-
-  document.getElementById("patientWeight").addEventListener("input", recalc);
+function recalc() {
+  const wt = parseFloat(document.getElementById("patientWeight").value) || 0;
 
   drugs.forEach(d => {
-    document.getElementById(d.doseId).addEventListener("input", recalc);
-    if (d.concId) document.getElementById(d.concId).addEventListener("change", recalc);
-  });
+    const dose = parseFloat(document.getElementById(d.doseId).value) || 0;
 
-  recalc();
+    let conc = (d.concFixed !== undefined)
+      ? d.concFixed
+      : parseFloat(document.getElementById(d.concId).value);
+
+    const mg = wt * dose;
+    const ml = conc ? mg / conc : 0;
+
+    document.getElementById(d.mgId).value = mg.toFixed(2);
+    document.getElementById(d.mlId).value = ml.toFixed(3);
+  });
+}
+
+document.getElementById("patientWeight").addEventListener("input", recalc);
+drugs.forEach(d => {
+  document.getElementById(d.doseId).addEventListener("input", recalc);
+  if (d.concId) document.getElementById(d.concId).addEventListener("change", recalc);
+});
+recalc();
 </script>
+
+</body>
+</html>

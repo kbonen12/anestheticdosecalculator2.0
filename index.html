@@ -15,8 +15,9 @@
   .patient-row th { background: #fbe5d6; }
   .input-number { width: 70px; padding: 2px 3px; background: #ffe6b5; }
   .output-number { width: 70px; padding: 2px 3px; background: #c6efce; }
-  /* Make dropdowns wider so mg/mL text is not cut off */
   select.input-number { width: 130px; }
+  a.drug-link { color: #0366d6; text-decoration: none; }
+  a.drug-link:hover { text-decoration: underline; }
 
   .tabs { margin-bottom: 12px; }
   .tabs button {
@@ -49,7 +50,8 @@
 <div id="tab-doses" class="tab-content active">
   <div class="note">
     Change the <strong>orange</strong> cells (Patient Wt &amp; Actual Dose).  
-    The <strong>green</strong> cells calculate automatically.
+    The <strong>green</strong> cells calculate automatically.  
+    Click any <strong>drug name</strong> for a detailed fact sheet.
   </div>
 
   <table>
@@ -78,7 +80,7 @@
     <!-- Atropine -->
     <tr>
       <td></td>
-      <td>Atropine</td>
+      <td><a class="drug-link" href="drug.html?drug=atropine" target="_blank">Atropine</a></td>
       <td>IM, SQ, IV</td>
       <td>0.01–0.04</td>
       <td><input id="dose-atropine" type="number" step="0.001" value="0.01" class="input-number" /></td>
@@ -96,7 +98,7 @@
     <!-- Glycopyrrolate -->
     <tr>
       <td></td>
-      <td>Glycopyrrolate</td>
+      <td><a class="drug-link" href="drug.html?drug=glycopyrrolate" target="_blank">Glycopyrrolate</a></td>
       <td>IM, SQ, IV</td>
       <td>0.005–0.02</td>
       <td><input id="dose-glycopyrrolate" type="number" step="0.001" value="0.005" class="input-number" /></td>
@@ -110,7 +112,7 @@
 
     <tr>
       <td></td>
-      <td>Acepromazine</td>
+      <td><a class="drug-link" href="drug.html?drug=acepromazine" target="_blank">Acepromazine</a></td>
       <td>IM, SQ, IV</td>
       <td>0.01–0.05</td>
       <td><input id="dose-acepromazine" type="number" step="0.001" value="0.02" class="input-number" /></td>
@@ -121,7 +123,7 @@
 
     <tr>
       <td></td>
-      <td>Diazepam</td>
+      <td><a class="drug-link" href="drug.html?drug=diazepam" target="_blank">Diazepam</a></td>
       <td>IV</td>
       <td>0.1–0.5</td>
       <td><input id="dose-diazepam" type="number" step="0.01" value="0.1" class="input-number" /></td>
@@ -132,7 +134,7 @@
 
     <tr>
       <td></td>
-      <td>Midazolam</td>
+      <td><a class="drug-link" href="drug.html?drug=midazolam" target="_blank">Midazolam</a></td>
       <td>IM, SQ, IV</td>
       <td>0.1–0.5</td>
       <td><input id="dose-midazolam" type="number" step="0.01" value="0.3" class="input-number" /></td>
@@ -146,7 +148,7 @@
 
     <tr>
       <td></td>
-      <td>Buprenorphine</td>
+      <td><a class="drug-link" href="drug.html?drug=buprenorphine" target="_blank">Buprenorphine</a></td>
       <td>IM, SQ, IV, OTM</td>
       <td>0.01–0.04</td>
       <td><input id="dose-buprenorphine" type="number" step="0.001" value="0.04" class="input-number" /></td>
@@ -162,7 +164,7 @@
 
     <tr>
       <td></td>
-      <td>Butorphanol</td>
+      <td><a class="drug-link" href="drug.html?drug=butorphanol" target="_blank">Butorphanol</a></td>
       <td>IM, SQ, IV</td>
       <td>0.2–0.8</td>
       <td><input id="dose-butorphanol" type="number" step="0.01" value="0.2" class="input-number" /></td>
@@ -173,7 +175,7 @@
 
     <tr>
       <td></td>
-      <td>Fentanyl</td>
+      <td><a class="drug-link" href="drug.html?drug=fentanyl" target="_blank">Fentanyl</a></td>
       <td>IM, SQ, IV</td>
       <td>0.002–0.01</td>
       <td><input id="dose-fentanyl" type="number" step="0.001" value="0.002" class="input-number" /></td>
@@ -184,7 +186,7 @@
 
     <tr>
       <td></td>
-      <td>Morphine</td>
+      <td><a class="drug-link" href="drug.html?drug=morphine" target="_blank">Morphine</a></td>
       <td>IM, SQ, IV</td>
       <td>0.01–1.0</td>
       <td><input id="dose-morphine" type="number" step="0.01" value="0.1" class="input-number" /></td>
@@ -195,7 +197,7 @@
 
     <tr>
       <td></td>
-      <td>Hydromorphone</td>
+      <td><a class="drug-link" href="drug.html?drug=hydromorphone" target="_blank">Hydromorphone</a></td>
       <td>IM, SQ, IV</td>
       <td>0.05–0.2</td>
       <td><input id="dose-hydromorphone" type="number" step="0.01" value="0.05" class="input-number" /></td>
@@ -206,7 +208,7 @@
 
     <tr>
       <td></td>
-      <td>Methadone</td>
+      <td><a class="drug-link" href="drug.html?drug=methadone" target="_blank">Methadone</a></td>
       <td>IM, SQ, IV</td>
       <td>0.1–0.7</td>
       <td><input id="dose-methadone" type="number" step="0.01" value="0.5" class="input-number" /></td>
@@ -220,7 +222,7 @@
 
     <tr>
       <td></td>
-      <td>Dexmedetomidine</td>
+      <td><a class="drug-link" href="drug.html?drug=dexmedetomidine" target="_blank">Dexmedetomidine</a></td>
       <td>IM, SQ, IV</td>
       <td>0.001–0.02</td>
       <td><input id="dose-dexmedetomidine" type="number" step="0.001" value="0.005" class="input-number" /></td>
@@ -240,7 +242,7 @@
 
     <tr>
       <td></td>
-      <td>Propofol</td>
+      <td><a class="drug-link" href="drug.html?drug=propofol" target="_blank">Propofol</a></td>
       <td>IV</td>
       <td>2–8</td>
       <td><input id="dose-propofol" type="number" step="0.1" value="5" class="input-number" /></td>
@@ -251,7 +253,7 @@
 
     <tr>
       <td></td>
-      <td>Ketamine</td>
+      <td><a class="drug-link" href="drug.html?drug=ketamine" target="_blank">Ketamine</a></td>
       <td>IV, IM</td>
       <td>5–7</td>
       <td><input id="dose-ketamine" type="number" step="0.1" value="6" class="input-number" /></td>
@@ -262,7 +264,7 @@
 
     <tr>
       <td></td>
-      <td>Etomidate</td>
+      <td><a class="drug-link" href="drug.html?drug=etomidate" target="_blank">Etomidate</a></td>
       <td>IV</td>
       <td>0.5–1.5</td>
       <td><input id="dose-etomidate" type="number" step="0.01" value="0.1" class="input-number" /></td>
@@ -273,7 +275,7 @@
 
     <tr>
       <td></td>
-      <td>Alfaxalone</td>
+      <td><a class="drug-link" href="drug.html?drug=alfaxalone" target="_blank">Alfaxalone</a></td>
       <td>IV, IM</td>
       <td>2–5</td>
       <td><input id="dose-alfaxalone" type="number" step="0.1" value="5" class="input-number" /></td>
@@ -287,7 +289,7 @@
 
     <tr>
       <td></td>
-      <td>Carprofen</td>
+      <td><a class="drug-link" href="drug.html?drug=carprofen" target="_blank">Carprofen</a></td>
       <td>SQ</td>
       <td>2.2–4.4 (dog), 1.1–2.2 (cat)</td>
       <td><input id="dose-carprofen" type="number" step="0.1" value="2.2" class="input-number" /></td>
@@ -298,7 +300,7 @@
 
     <tr>
       <td></td>
-      <td>Ondansetron</td>
+      <td><a class="drug-link" href="drug.html?drug=ondansetron" target="_blank">Ondansetron</a></td>
       <td>IV</td>
       <td>0.5</td>
       <td><input id="dose-ondansetron" type="number" step="0.01" value="0.5" class="input-number" /></td>
@@ -309,7 +311,7 @@
 
     <tr>
       <td></td>
-      <td>Bupivacaine</td>
+      <td><a class="drug-link" href="drug.html?drug=bupivacaine" target="_blank">Bupivacaine</a></td>
       <td>Block</td>
       <td>&lt; 2 mg/kg (dog), &lt; 1 mg/kg (cat)</td>
       <td><input id="dose-bupivacaine" type="number" step="0.1" value="2" class="input-number" /></td>
@@ -320,7 +322,7 @@
 
     <tr>
       <td></td>
-      <td>Lidocaine</td>
+      <td><a class="drug-link" href="drug.html?drug=lidocaine" target="_blank">Lidocaine</a></td>
       <td>Testicular Block</td>
       <td>&lt; 4 mg/kg (dog), &lt; 2 mg/kg (cat)</td>
       <td><input id="dose-lidocaine" type="number" step="0.1" value="4" class="input-number" /></td>
@@ -342,7 +344,7 @@
     CRI calculations: <code>mg/min = kg × dose (/kg/min)</code>,
     <code>mL/min = mg/min ÷ conc</code>,
     <code>mL/hr = mL/min × 60</code>.  
-    For fluids: <code>mL/hr = kg × mL/kg/hr</code>.
+    Fluids: <code>mL/hr = kg × mL/kg/hr</code>.
   </div>
 
   <table>
@@ -461,7 +463,6 @@ const drugs = [
   { doseId: "dose-ondansetron", mgId: "mg-ondansetron", mlId: "ml-ondansetron", concFixed: 2 },
 
   { doseId: "dose-bupivacaine", mgId: "mg-bupivacaine", mlId: "ml-bupivacaine", concFixed: 7.5 },
-
   { doseId: "dose-lidocaine", mgId: "mg-lidocaine", mlId: "ml-lidocaine", concId: "conc-lidocaine" }
 ];
 
@@ -489,7 +490,7 @@ drugs.forEach(d => {
   if (d.concId) document.getElementById(d.concId).addEventListener("change", recalcDoses);
 });
 
-/* ---------- CRI TAB DATA (no epinephrine) ---------- */
+/* ---------- CRI TAB DATA ---------- */
 const criDrugs = [
   {
     doseId: "cri-dose-dopamine",
@@ -526,7 +527,7 @@ function recalcCRI() {
   // Drugs: mg/min, mL/min, mL/hr
   criDrugs.forEach(d => {
     const dose = parseFloat(document.getElementById(d.doseId).value) || 0;
-    const mgPerMin = wt * dose;              // mg/min (or same units as dose)
+    const mgPerMin = wt * dose;
     const mlPerMin = d.conc ? mgPerMin / d.conc : 0;
     const mlPerHr  = mlPerMin * 60;
 
@@ -535,7 +536,7 @@ function recalcCRI() {
     document.getElementById(d.mlHrId).value  = mlPerHr.toFixed(2);
   });
 
-  // Fluids: mL/hr = kg * mL/kg/hr
+  // Fluids: mL/hr = kg * mL/kg/hr (or mL/kg for bolus, treated the same)
   criFluids.forEach(f => {
     const dose = parseFloat(document.getElementById(f.doseId).value) || 0;
     const mlHr = wt * dose;

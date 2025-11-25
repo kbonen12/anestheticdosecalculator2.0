@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Drug Fact Sheet</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+  }
+  .card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  h1 {
+    margin-top: 0;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: #666;
+    margin-bottom: 12px;
+  }
+  .tag-row {
+    margin-bottom: 12px;
+  }
+  .tag {
+    display: inline-block;
+    background: #e0f0ff;
+    color: #034f84;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-right: 6px;
+    margin-bottom: 4px;
+  }
+  h2 {
+    margin-top: 18px;
+    margin-bottom: 6px;
+    font-size: 1.1rem;
+  }
+  dl {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 4px 12px;
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+  }
+  dt {
+    font-weight: bold;
+    color: #333;
+  }
+  dd {
+    margin: 0;
+  }
+  ul {
+    margin: 4px 0 8px 20px;
+    padding: 0;
+    font-size: 0.9rem;
+  }
+  li { margin-bottom: 2px; }
+  .note {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 14px;
+  }
+  a.back-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: #0366d6;
+  }
+  a.back-link:hover {
+    text-decoration: underline;
+  }
+  .error {
+    color: #b00020;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">&larr; Back to calculator</a>
+
+<div class="card">
+  <h1 id="drug-name">Drug</h1>
+  <div id="drug-subtitle" class="subtitle"></div>
+
+  <div id="tag-row" class="tag-row"></div>
+
+  <h2>Quick Reference</h2>
+  <dl>
+    <dt>Category</dt><dd id="field-category"></dd>
+    <dt>Typical dose</dt><dd id="field-dose"></dd>
+    <dt>Concentration</dt><dd id="field-concentration"></dd>
+    <dt>Routes</dt><dd id="field-routes"></dd>
+    <dt>Onset / duration</dt><dd id="field-time"></dd>
+    <dt>Controlled?</dt><dd id="field-schedule"></dd>
+  </dl>
+
+  <h2>Mechanism & Uses</h2>
+  <ul id="list-mechanism"></ul>
+
+  <h2>Advantages</h2>
+  <ul id="list-advantages"></ul>
+
+  <h2>Cautions / Disadvantages</h2>
+  <ul id="list-disadvantages"></ul>
+
+  <h2>Extra Notes</h2>
+  <ul id="list-notes"></ul>
+  <p id="no-extra" style="display:none; font-size:0.9rem; color:#555;">
+    No additional notes added yet for this drug.
+  </p>
+
+  <p id="error-text" class="error" style="display:none;"></p>
+
+  <p class="note">
+    Summary formatted for quick anesthesia reference. Always verify doses with your hospital protocols and references.
+  </p>
+</div>
+
+<script>
+// --- Data: one standardized object per drug ---
+// (Doses / comments based on your spreadsheet + common small-animal practice knowledge.)
+
+const DRUGS = {
+  atropine: {
+    name: "Atropine",
+    subtitle: "Anticholinergic premedication",
+    category: "Anticholinergic",
+    dose: "0.01–0.04 mg/kg SQ, IM, IV",
+    concentration: "0.54 mg/mL (also 0.4 or 1 mg/mL)",
+    routes: "SQ, IM, IV",
+    time: "Onset ~5–10 min IM; duration ~60–90 min",
+    schedule: "Not controlled",
+    tags: ["Premed", "Anticholinergic"],
+    mechanism: [
+      "Competitive muscarinic antagonist that reduces vagal tone.",
+      "Decreases salivary and respiratory secretions."
+    ],
+    advantages: [
+      "Useful for treating vagally mediated bradycardia.",
+      "Increases heart rate and supports cardiac output.",
+      "Cheap and widely available."
+    ],
+    disadvantages: [
+      "Can cause tachycardia and increased myocardial oxygen demand.",
+      "May worsen certain tachyarrhythmias.",
+      "Use cautiously in patients with pre-existing cardiac disease."
+    ],
+    notes: []
+  },
+
+  glycopyrrolate: {
+    name: "Glycopyrrolate",
+    subtitle: "Longer-acting anticholinergic",
+    category: "Anticholinergic",
+    dose: "0.005–0.02 mg/kg SQ, IM, IV",
+    concentration: "0.2 mg/mL",
+    routes: "SQ, IM, IV",
+    time: "Onset similar to atropine; duration 2–4 hr",
+    schedule: "Not controlled",
+    tags: ["Premed", "Anticholinergic"],
+    mechanism: [
+      "Quaternary ammonium antimuscarinic; does not cross blood–brain barrier.",
+      "Reduces vagal tone and salivary/respiratory secretions."
+    ],
+    advantages: [
+      "Does not cross the blood–brain barrier, so minimal CNS effects.",
+      "Longer duration of action than atropine.",
+      "Less pronounced initial tachycardia."
+    ],
+    disadvantages: [
+      "Prolonged anticholinergic effects may be undesirable post-op.",
+      "Not ideal when a very rapid heart-rate response is needed (slightly slower onset)."
+    ],
+    notes: []
+  },
+
+  acepromazine: {
+    name: "Acepromazine",
+    subtitle: "Phenothiazine tranquilizer",
+    category: "Tranquilizer / Sedative",
+    dose: "0.01–0.05 mg/kg SQ, IM, IV (often lower in sick animals)",
+    concentration: "1 mg/mL",
+    routes: "SQ, IM, IV",
+    time: "Onset 20–30 min IM; duration 4–6+ hr",
+    schedule: "Not controlled",
+    tags: ["Premed", "Sedative"],
+    mechanism: [
+      "Dopamine (D2) receptor antagonist with alpha-1 blockade.",
+      "Produces tranquilization but limited analgesia."
+    ],
+    advantages: [
+      "Good anxiolytic and sedative in healthy, non-painful patients.",
+      "Anti-emetic and anti-arrhythmic properties.",
+      "Smooths recovery when used at low doses."
+    ],
+    disadvantages: [
+      "Causes peripheral vasodilation and hypotension.",
+      "Irreversible once given; effects last several hours.",
+      "Avoid or reduce dose in hypovolemic, geriatric, or very young patients."
+    ],
+    notes: []
+  },
+
+  diazepam: {
+    name: "Diazepam",
+    subtitle: "Benzodiazepine sedative / muscle relaxant",
+    category: "Benzodiazepine",
+    dose: "0.1–0.5 mg/kg IV",
+    concentration: "5 mg/mL",
+    routes: "IV (preferred), PO, rectal",
+    time: "Rapid onset; short duration (≈30–60 min IV)",
+    schedule: "Controlled (C-IV, varies by region)",
+    tags: ["Sedative", "Anticonvulsant"],
+    mechanism: [
+      "Enhances GABA at the GABA-A receptor, producing CNS depression.",
+      "Provides anxiolysis, muscle relaxation, and anticonvulsant activity."
+    ],
+    advantages: [
+      "Minimal cardiovascular depression at clinical doses.",
+      "Useful for induction when combined with ketamine or propofol.",
+      "Good anticonvulsant for active seizures."
+    ],
+    disadvantages: [
+      "In healthy adult dogs, may cause excitement if used alone.",
+      "Formulation is propylene-glycol based; IM injection is painful and poorly absorbed.",
+      "Hepatic metabolism; use cautiously in liver dysfunction."
+    ],
+    notes: []
+  },
+
+  midazolam: {
+    name: "Midazolam",
+    subtitle: "Water-soluble benzodiazepine",
+    category: "Benzodiazepine",
+    dose: "0.1–0.5 mg/kg IM, SQ, IV",
+    concentration: "5 mg/mL",
+    routes: "IM, SQ, IV",
+    time: "Rapid onset; duration ~1 hr",
+    schedule: "Controlled (C-IV, varies by region)",
+    tags: ["Sedative", "Anticonvulsant"],
+    mechanism: [
+      "Benzodiazepine that enhances GABA, causing CNS depression.",
+      "Similar clinical profile to diazepam but water soluble."
+    ],
+    advantages: [
+      "Can be given IM without significant pain (water-soluble).",
+      "Minimal cardiovascular and respiratory depression.",
+      "Reversible with flumazenil."
+    ],
+    disadvantages: [
+      "May cause excitement or dysphoria in healthy, non-painful dogs and cats.",
+      "Limited sedative effect when used alone in young healthy animals."
+    ],
+    notes: [
+      "Commonly combined with opioids or induction agents for co-induction."
+    ]
+  },
+
+  buprenorphine: {
+    name: "Buprenorphine",
+    subtitle: "Partial μ-agonist opioid",
+    category: "Opioid analgesic",
+    dose: "0.01–0.04 mg/kg IM, IV, SQ, OTM",
+    concentration: "0.3 mg/mL (high-conc 1.8 mg/mL formulations exist)",
+    routes: "IM, IV, SQ, oral transmucosal (cats)",
+    time: "Onset 30–45 min; duration 6–10+ hr depending on formulation",
+    schedule: "Controlled (C-III, varies by region)",
+    tags: ["Opioid", "Analgesic"],
+    mechanism: [
+      "Partial μ-agonist with high receptor affinity and slow dissociation.",
+      "Provides moderate analgesia with a ceiling effect on efficacy."
+    ],
+    advantages: [
+      "Long-acting analgesia in cats and dogs.",
+      "Lower incidence of dysphoria and respiratory depression than full μ-agonists.",
+      "Oral transmucosal administration is effective in cats."
+    ],
+    disadvantages: [
+      "Difficult to reverse completely due to high receptor affinity.",
+      "May provide insufficient analgesia for very painful procedures."
+    ],
+    notes: []
+  },
+
+  butorphanol: {
+    name: "Butorphanol",
+    subtitle: "κ-agonist / μ-antagonist opioid",
+    category: "Opioid (mixed agonist–antagonist)",
+    dose: "0.2–0.8 mg/kg IM, IV, SQ",
+    concentration: "10 mg/mL",
+    routes: "IM, IV, SQ",
+    time: "Onset 10–15 min; duration ~1–2 hr (analgesia) and 2–4 hr (sedation)",
+    schedule: "Controlled (C-IV in many regions)",
+    tags: ["Opioid", "Sedative"],
+    mechanism: [
+      "κ-agonist and weak μ-antagonist.",
+      "Good sedative but only mild analgesic effect."
+    ],
+    advantages: [
+      "Good sedative in combination with other agents.",
+      "Ceiling effect for respiratory depression; relatively safe.",
+      "Can partially reverse full μ-agonists while maintaining some analgesia."
+    ],
+    disadvantages: [
+      "Not effective for severe pain (e.g., orthopedic or major abdominal surgery).",
+      "Short duration of analgesia."
+    ],
+    notes: []
+  },
+
+  fentanyl: {
+    name: "Fentanyl",
+    subtitle: "Potent full μ-agonist opioid",
+    category: "Opioid analgesic",
+    dose: "0.002–0.01 mg/kg IM, IV (bolus) or CRI as protocol",
+    concentration: "0.05 mg/mL",
+    routes: "IV (bolus/CRI), IM, transdermal patch",
+    time: "Rapid onset (minutes IV); very short duration after single bolus",
+    schedule: "Controlled (C-II in many regions)",
+    tags: ["Opioid", "CRI"],
+    mechanism: [
+      "Strong μ-agonist providing profound analgesia.",
+      "Commonly used as intra-operative CRI or repeated boluses."
+    ],
+    advantages: [
+      "Excellent analgesia for severe acute pain.",
+      "Very titratable by CRI with rapid on/off effect.",
+      "Minimal cardiovascular depression at clinical doses."
+    ],
+    disadvantages: [
+      "Dose-dependent respiratory depression and decreased tidal volume.",
+      "Bradycardia due to increased vagal tone.",
+      "Requires controlled-substance handling and monitoring."
+    ],
+    notes: []
+  },
+
+  morphine: {
+    name: "Morphine",
+    subtitle: "Prototype full μ-agonist opioid",
+    category: "Opioid analgesic",
+    dose: "0.1–0.5 mg/kg IM, SQ, slow IV (dog); lower in cats/compromised patients",
+    concentration: "10 mg/mL",
+    routes: "IM, SQ, slow IV, epidural",
+    time: "Onset 20–30 min IM; duration 4–6 hr",
+    schedule: "Controlled (C-II in many regions)",
+    tags: ["Opioid"],
+    mechanism: [
+      "Full μ-agonist providing moderate–severe analgesia.",
+      "Histamine release possible with rapid IV injection."
+    ],
+    advantages: [
+      "Inexpensive and widely available.",
+      "Good analgesia and sedation in many species.",
+      "Can be used epidurally for long-lasting regional analgesia."
+    ],
+    disadvantages: [
+      "May cause vomiting and defecation, especially in non-painful animals.",
+      "Bradycardia and respiratory depression at higher doses.",
+      "Histamine release and hypotension if given rapidly IV."
+    ],
+    notes: []
+  },
+
+  hydromorphone: {
+    name: "Hydromorphone",
+    subtitle: "Full μ-agonist opioid",
+    category: "Opioid analgesic",
+    dose: "0.05–0.2 mg/kg IM, IV, SQ",
+    concentration: "2 mg/mL",
+    routes: "IM, IV, SQ",
+    time: "Onset 15–20 min IM; duration 3–4 hr",
+    schedule: "Controlled (C-II in many regions)",
+    tags: ["Opioid"],
+    mechanism: [
+      "Full μ-agonist providing moderate to severe analgesia.",
+    ],
+    advantages: [
+      "Reliable analgesia and sedation.",
+      "Less histamine release than morphine when given IV."
+    ],
+    disadvantages: [
+      "Commonly causes vomiting (especially in dogs).",
+      "Panting, dysphoria, or bradycardia can occur.",
+      "Respiratory depression at higher doses."
+    ],
+    notes: []
+  },
+
+  methadone: {
+    name: "Methadone",
+    subtitle: "Full μ-agonist opioid (NMDA effects)",
+    category: "Opioid analgesic",
+    dose: "0.1–0.7 mg/kg IM, IV, SQ",
+    concentration: "10 mg/mL",
+    routes: "IM, IV, SQ",
+    time: "Onset 10–20 min; duration 3–6 hr",
+    schedule: "Controlled (C-II in many regions)",
+    tags: ["Opioid"],
+    mechanism: [
+      "Full μ-agonist with additional NMDA antagonism and monoamine reuptake effects.",
+      "Useful for acute peri-operative pain."
+    ],
+    advantages: [
+      "Provides good analgesia with generally less vomiting than morphine/hydromorphone.",
+      "Useful in multimodal therapy for neuropathic or chronic pain."
+    ],
+    disadvantages: [
+      "Can cause respiratory depression and bradycardia.",
+      "May lead to sedation or dysphoria in some patients."
+    ],
+    notes: []
+  },
+
+  dexmedetomidine: {
+    name: "Dexmedetomidine",
+    subtitle: "Alpha-2 adrenergic agonist sedative",
+    category: "Alpha-2 agonist",
+    dose: "0.001–0.02 mg/kg IM, SQ, IV (dose depends on patient health/temperament)",
+    concentration: "0.5 mg/mL (also 0.1 & 10 mg/mL formulations)",
+    routes: "IM, IV, SQ",
+    time: "Onset 5–10 min IM; duration 1–2 hr for clinical sedation",
+    schedule: "Not controlled",
+    tags: ["Sedative", "Analgesic", "Reversible"],
+    mechanism: [
+      "Selective alpha-2 agonist causing CNS depression and analgesia.",
+      "Produces dose-dependent sedation, muscle relaxation, and analgesia."
+    ],
+    advantages: [
+      "Provides reliable sedation and some analgesia.",
+      "Reversible with atipamezole.",
+      "Good muscle relaxation for minor procedures."
+    ],
+    disadvantages: [
+      "Marked bradycardia and reduced cardiac output.",
+      "Peripheral vasoconstriction and hypertension followed by hypotension.",
+      "Avoid in significant cardiac disease, shock, or very young/old patients."
+    ],
+    notes: []
+  },
+
+  propofol: {
+    name: "Propofol",
+    subtitle: "IV induction agent",
+    category: "Non-barbiturate hypnotic",
+    dose: "2–8 mg/kg IV to effect",
+    concentration: "10 mg/mL",
+    routes: "IV",
+    time: "Rapid onset (&lt;1 min); short duration after single bolus",
+    schedule: "Not controlled in many regions",
+    tags: ["Induction"],
+    mechanism: [
+      "Enhances GABA-mediated inhibitory neurotransmission.",
+      "Provides hypnosis but no analgesia."
+    ],
+    advantages: [
+      "Rapid, smooth induction and recovery.",
+      "Can be titrated slowly to effect.",
+      "Extra-hepatic metabolism; often tolerated in liver disease."
+    ],
+    disadvantages: [
+      "Dose-dependent apnea and respiratory depression.",
+      "Vasodilation and hypotension, especially in hypovolemic patients.",
+      "Pain on injection possible with small peripheral catheters."
+    ],
+    notes: []
+  },
+
+  ketamine: {
+    name: "Ketamine",
+    subtitle: "Dissociative anesthetic",
+    category: "Dissociative / NMDA antagonist",
+    dose: "5–7 mg/kg IV or IM for induction (varies with protocol)",
+    concentration: "100 mg/mL",
+    routes: "IV, IM",
+    time: "Onset rapid; duration 10–20 min after induction dose",
+    schedule: "Controlled (C-III in many regions)",
+    tags: ["Induction", "Analgesic"],
+    mechanism: [
+      "Non-competitive NMDA receptor antagonist.",
+      "Produces dissociative anesthesia with somatic analgesia."
+    ],
+    advantages: [
+      "Maintains sympathetic tone (supports HR and BP in many patients).",
+      "Provides good analgesia, especially for somatic/orthopedic pain.",
+      "Useful as CRI for wind-up / chronic pain."
+    ],
+    disadvantages: [
+      "Sympathomimetic effects may be undesirable in some cardiomyopathies.",
+      "Increased salivation and muscle tone if not combined with other drugs.",
+      "Can cause rough recoveries at high doses."
+    ],
+    notes: [
+      "Avoid in patients with increased intracranial or intraocular pressure when possible."
+    ]
+  },
+
+  etomidate: {
+    name: "Etomidate",
+    subtitle: "Cardio-sparing induction agent",
+    category: "Imidazole anesthetic",
+    dose: "0.5–1.5 mg/kg IV to effect",
+    concentration: "2 mg/mL",
+    routes: "IV",
+    time: "Rapid onset; short duration",
+    schedule: "Not controlled",
+    tags: ["Induction"],
+    mechanism: [
+      "Enhances GABA-mediated inhibition with minimal cardiovascular depression."
+    ],
+    advantages: [
+      "Minimal effect on heart rate, contractility, and blood pressure.",
+      "Useful in patients with severe cardiac disease or limited reserve."
+    ],
+    disadvantages: [
+      "Can cause myoclonus and excitement if used without adequate premedication.",
+      "Adrenocortical suppression, particularly with repeated dosing/CRI.",
+      "Formulation can be irritating; pain on injection possible."
+    ],
+    notes: []
+  },
+
+  alfaxalone: {
+    name: "Alfaxalone",
+    subtitle: "Neurosteroid induction agent",
+    category: "Neuroactive steroid anesthetic",
+    dose: "2–5 mg/kg IV or IM to effect",
+    concentration: "10 mg/mL",
+    routes: "IV, IM",
+    time: "Rapid onset; short duration",
+    schedule: "Controlled in some regions",
+    tags: ["Induction"],
+    mechanism: [
+      "GABA-A agonist producing hypnosis and muscle relaxation."
+    ],
+    advantages: [
+      "Can be administered IM for heavy sedation/anesthesia in cats and small dogs.",
+      "Generally smooth induction and recovery when titrated to effect.",
+      "Less cardiovascular depression than high doses of propofol."
+    ],
+    disadvantages: [
+      "Excitement or paddling can occur on recovery, especially if under-dosed.",
+      "More expensive than propofol in many practices."
+    ],
+    notes: []
+  },
+
+  carprofen: {
+    name: "Carprofen",
+    subtitle: "NSAID for peri-operative analgesia",
+    category: "NSAID",
+    dose: "Dogs: 2.2 mg/kg BID or 4.4 mg/kg SID; cats: 1–2 mg/kg (single peri-op dose only, where labeled)",
+    concentration: "50 mg/mL (injectable) or oral tablets",
+    routes: "SQ (injectable), PO",
+    time: "Onset within hours; duration ≈24 hr",
+    schedule: "Not controlled",
+    tags: ["NSAID", "Analgesic"],
+    mechanism: [
+      "COX-2 preferential NSAID (varies by species).",
+      "Reduces inflammatory mediators and pain."
+    ],
+    advantages: [
+      "Provides good post-operative analgesia for soft-tissue and orthopedic pain.",
+      "Once-daily dosing in dogs."
+    ],
+    disadvantages: [
+      "Risk of GI ulceration, vomiting, diarrhea.",
+      "Potential renal and hepatic adverse effects, especially with dehydration or pre-existing disease.",
+      "Avoid in patients with existing NSAID or steroid therapy without appropriate washout."
+    ],
+    notes: []
+  },
+
+  ondansetron: {
+    name: "Ondansetron",
+    subtitle: "Serotonin (5-HT3) antagonist anti-emetic",
+    category: "Antiemetic",
+    dose: "0.5–1 mg/kg IV (varies by protocol)",
+    concentration: "2 mg/mL",
+    routes: "IV, PO",
+    time: "Onset within 30–60 min; duration several hours",
+    schedule: "Not controlled",
+    tags: ["Antiemetic"],
+    mechanism: [
+      "Selective 5-HT3 receptor antagonist in the chemoreceptor trigger zone and GI tract."
+    ],
+    advantages: [
+      "Effective for many causes of nausea/vomiting, including chemotherapy-induced.",
+      "Minimal sedative or cardiovascular effects."
+    ],
+    disadvantages: [
+      "Relatively short duration; may require repeated dosing.",
+      "Cost can be higher than maropitant in some settings."
+    ],
+    notes: []
+  },
+
+  bupivacaine: {
+    name: "Bupivacaine",
+    subtitle: "Long-acting local anesthetic",
+    category: "Amide local anesthetic",
+    dose: "Dogs: &lt;2 mg/kg; cats: &lt;1 mg/kg total dose (do not exceed toxic dose)",
+    concentration: "7.5 mg/mL (varies by product)",
+    routes: "Local infiltration, nerve blocks, epidural, wound soaker catheters",
+    time: "Onset 15–30 min; duration 4–8 hr (location-dependent)",
+    schedule: "Not controlled",
+    tags: ["Local block"],
+    mechanism: [
+      "Blocks voltage-gated sodium channels, preventing nerve depolarization."
+    ],
+    advantages: [
+      "Provides long-lasting regional analgesia.",
+      "Marked opioid-sparing effect when used in locoregional techniques."
+    ],
+    disadvantages: [
+      "Cardiotoxic and neurotoxic at high plasma concentrations.",
+      "Intravascular injection can cause severe arrhythmias and collapse.",
+      "Dose limits particularly important in cats and small patients."
+    ],
+    notes: []
+  },
+
+  lidocaine: {
+    name: "Lidocaine",
+    subtitle: "Short-acting local anesthetic; anti-arrhythmic",
+    category: "Amide local anesthetic",
+    dose: "Typical regional dose &lt;4 mg/kg (dog), &lt;2 mg/kg (cat); CRI protocols vary",
+    concentration: "10–20 mg/mL (injectable); diluted for CRI or epidural use",
+    routes: "Local infiltration, nerve blocks, IV bolus/CRI (dogs), epidural",
+    time: "Onset 5–10 min; duration 1–2 hr for local blocks",
+    schedule: "Not controlled",
+    tags: ["Local block", "CRI"],
+    mechanism: [
+      "Blocks voltage-gated sodium channels in nerves and myocardium.",
+      "At IV doses, provides anti-arrhythmic and pro-motility effects."
+    ],
+    advantages: [
+      "Rapid onset of action.",
+      "Systemic CRI can reduce anesthetic requirements and provide analgesia in dogs.",
+      "Useful anti-arrhythmic for ventricular ectopy in dogs."
+    ],
+    disadvantages: [
+      "Cats are more sensitive to lidocaine toxicity; avoid IV bolus in cats.",
+      "High doses can cause CNS signs (tremors, seizures) and cardiovascular depression.",
+      "Accidental intravascular injection with regional blocks can be dangerous."
+    ],
+    notes: []
+  },
+
+  // CRI-only drugs:
+
+  dopamine: {
+    name: "Dopamine",
+    subtitle: "Catecholamine CRI (inotrope / vasopressor)",
+    category: "Inotrope / vasopressor",
+    dose: "0.001–0.01 mg/kg/min IV CRI (dose-dependent receptor profile)",
+    concentration: "Commonly 0.8 mg/mL dilution in syringe pump (per your sheet)",
+    routes: "IV CRI",
+    time: "Very short half-life; effect stops within minutes of stopping CRI",
+    schedule: "Not controlled",
+    tags: ["CRI", "Cardiovascular"],
+    mechanism: [
+      "Low doses: dopaminergic effects on renal/mesenteric vasculature.",
+      "Moderate doses: β1-adrenergic inotropy.",
+      "High doses: α1-mediated vasoconstriction."
+    ],
+    advantages: [
+      "Titrated CRI allows support of blood pressure and cardiac output.",
+      "Useful in hypotensive patients under anesthesia when fluid-responsive."
+    ],
+    disadvantages: [
+      "Can cause tachycardia and arrhythmias.",
+      "Increased myocardial oxygen demand; avoid in some cardiomyopathies.",
+      "Requires dedicated IV line and infusion pump."
+    ],
+    notes: []
+  },
+
+  dobutamine: {
+    name: "Dobutamine",
+    subtitle: "Primarily β1-agonist inotrope",
+    category: "Inotrope",
+    dose: "0.001–0.02 mg/kg/min IV CRI (protocol-dependent)",
+    concentration: "1 mg/mL dilution in your CRI syringe",
+    routes: "IV CRI",
+    time: "Very short half-life; titratable effect",
+    schedule: "Not controlled",
+    tags: ["CRI", "Cardiovascular"],
+    mechanism: [
+      "Predominantly β1-adrenergic agonist improving contractility.",
+      "Minimal direct effect on systemic vascular resistance at low doses."
+    ],
+    advantages: [
+      "Improves stroke volume and cardiac output in low-output states.",
+      "Less tachycardia than dopamine at similar inotropic doses."
+    ],
+    disadvantages: [
+      "Can induce tachyarrhythmias at higher doses.",
+      "May increase myocardial oxygen consumption.",
+      "Requires CRI and close monitoring of ECG and blood pressure."
+    ],
+    notes: []
+  },
+
+  ephedrine: {
+    name: "Ephedrine",
+    subtitle: "Indirect sympathomimetic vasopressor",
+    category: "Vasopressor / inotrope",
+    dose: "0.05–0.2 mg/kg IV or IM; CRI protocols vary (as in your sheet)",
+    concentration: "1 mg/mL for CRI in your calculator",
+    routes: "Slow IV bolus or CRI",
+    time: "Onset within minutes; duration 15–60 min depending on route",
+    schedule: "Not controlled in many regions",
+    tags: ["Vasopressor"],
+    mechanism: [
+      "Indirectly increases norepinephrine release and directly stimulates α and β receptors.",
+      "Results in increased heart rate and blood pressure."
+    ],
+    advantages: [
+      "Useful for treating transient anesthetic-related hypotension.",
+      "Can be given as bolus or as low-dose CRI."
+    ],
+    disadvantages: [
+      "Tachyphylaxis with repeated dosing.",
+      "May cause tachycardia and arrhythmias.",
+      "Less predictable in very sick or catecholamine-depleted patients."
+    ],
+    notes: []
+  }
+};
+
+// ---- Helper to get query param ----
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+function renderDrugPage() {
+  const key = (getQueryParam("drug") || "").toLowerCase();
+  const data = DRUGS[key];
+
+  const errorEl = document.getElementById("error-text");
+
+  if (!data) {
+    errorEl.style.display = "block";
+    errorEl.textContent = "Drug not found. Please open this page using the links from the calculator.";
+    document.getElementById("drug-name").textContent = "Unknown drug";
+    document.getElementById("drug-subtitle").textContent = "";
+    document.getElementById("tag-row").innerHTML = "";
+    return;
+  }
+
+  errorEl.style.display = "none";
+
+  document.getElementById("drug-name").textContent = data.name;
+  document.getElementById("drug-subtitle").textContent = data.subtitle || "";
+
+  const tagRow = document.getElementById("tag-row");
+  tagRow.innerHTML = "";
+  (data.tags || []).forEach(t => {
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.textContent = t;
+    tagRow.appendChild(span);
+  });
+
+  document.getElementById("field-category").textContent      = data.category || "";
+  document.getElementById("field-dose").textContent          = data.dose || "";
+  document.getElementById("field-concentration").textContent = data.concentration || "";
+  document.getElementById("field-routes").textContent        = data.routes || "";
+  document.getElementById("field-time").textContent          = data.time || "";
+  document.getElementById("field-schedule").textContent      = data.schedule || "";
+
+  function fillList(id, arr) {
+    const ul = document.getElementById(id);
+    ul.innerHTML = "";
+    (arr || []).forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+  }
+
+  fillList("list-mechanism",     data.mechanism);
+  fillList("list-advantages",    data.advantages);
+  fillList("list-disadvantages", data.disadvantages);
+  fillList("list-notes",         data.notes);
+
+  const noExtra = document.getElementById("no-extra");
+  if (!data.notes || data.notes.length === 0) {
+    noExtra.style.display = "block";
+  } else {
+    noExtra.style.display = "none";
+  }
+}
+
+renderDrugPage();
+</script>
+
+</body>
+</html>

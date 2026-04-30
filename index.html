@@ -2,48 +2,120 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Small Animal Anesthesia Dose & CRI Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Small Animal Anesthesia Calculator</title>
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-  h1 { margin-bottom: 0.3rem; }
-  .note { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    padding: 18px;
+    background: #eef2f7;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .app-header { max-width: 1000px; margin: 0 auto 14px; }
+  .app-header h1 { margin: 0 0 3px; font-size: 1.45rem; color: #14375e; letter-spacing: -0.2px; }
+  .app-header .subtitle { font-size: 0.8rem; color: #666; margin: 0; }
+
+  .note {
+    font-size: 0.84rem; color: #444;
+    background: #e8f1fb; border-left: 3px solid #14375e;
+    padding: 8px 12px; border-radius: 0 4px 4px 0;
+    margin-bottom: 14px;
+  }
   table { border-collapse: collapse; width: 100%; background: #fff; }
-  th, td { border: 1px solid #ccc; padding: 4px 6px; font-size: 0.85rem; text-align: left; }
-  th { background: #e0e0e0; }
-  .section-header { background: #ffd6d6; font-weight: bold; }
-  .sub-header { background: #f0f0ff; font-style: italic; }
-  .patient-row th { background: #fbe5d6; }
-  .input-number { width: 70px; padding: 2px 3px; background: #ffe6b5; }
-  .output-number { width: 70px; padding: 2px 3px; background: #c6efce; }
+  th, td { border: 1px solid #c8d8e8; padding: 5px 7px; font-size: 0.84rem; text-align: left; vertical-align: middle; }
+  th { background: #d4e6f1; color: #14375e; font-weight: 700; }
+  .section-header { background: #14375e; color: #fff; font-weight: bold; font-size: 0.88rem; }
+  .sub-header { background: #d4e6f1; color: #14375e; font-style: italic; font-weight: 600; }
+  .patient-row th { background: #fef5e7; color: #7d4a00; }
+  .input-number { width: 72px; padding: 3px 4px; background: #fff8ec; border: 1px solid #e8a000; border-radius: 3px; font-size: 0.84rem; }
+  .output-number { width: 72px; padding: 3px 4px; background: #eafaed; border: 1px solid #4caf50; border-radius: 3px; font-size: 0.84rem; color: #1a5e20; font-weight: 600; }
   select.input-number { width: 130px; }
-  a.drug-link { color: #0366d6; text-decoration: none; }
+  a.drug-link { color: #1455a4; text-decoration: none; font-weight: 500; }
   a.drug-link:hover { text-decoration: underline; }
 
-  .tabs { margin-bottom: 12px; }
+  .tabs { max-width: 1000px; margin: 0 auto; display: flex; gap: 3px; border-bottom: 2px solid #14375e; }
   .tabs button {
-    padding: 6px 14px;
-    margin-right: 6px;
-    border: 1px solid #999;
-    background: #eee;
+    padding: 7px 18px;
+    border: 1px solid #a8c4d8; border-bottom: none;
+    background: #cfe0ee;
     cursor: pointer;
-    border-radius: 4px 4px 0 0;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.88rem; color: #14375e; font-weight: 500;
   }
+  .tabs button:hover { background: #b8d4e8; }
   .tabs button.active {
-    background: #fff;
-    border-bottom-color: #fff;
-    font-weight: bold;
+    background: #fff; border-color: #14375e; border-bottom-color: #fff;
+    font-weight: 700; position: relative; bottom: -2px;
   }
   .tab-content { display: none; }
-  .tab-content.active { display: block; }
+  .tab-content.active {
+    display: block;
+    max-width: 1000px; margin: 0 auto;
+    background: #fff;
+    border: 1px solid #14375e; border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+  }
+
+  /* ── Kitty Magic ── */
+  .kitty-alert {
+    background: #fffde7;
+    border-left: 4px solid #f9a825;
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.88rem;
+    color: #4a3000;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .kitty-controls {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    align-items: flex-end; margin-bottom: 16px;
+  }
+  .kitty-field { display: flex; flex-direction: column; gap: 4px; }
+  .kitty-field label { font-size: 0.82rem; font-weight: bold; color: #333; }
+  .kitty-field input, .kitty-field select {
+    padding: 5px 8px; border: 1px solid #f0a040;
+    border-radius: 3px; background: #ffe6b5;
+    font-size: 0.88rem; min-width: 160px;
+  }
+  .kitty-band { font-size: 0.88rem; color: #444; margin-bottom: 14px; }
+  .kitty-band strong { color: #1a4e6e; }
+
+  .kitty-cards { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .k-card {
+    flex: 1; min-width: 160px; max-width: 260px;
+    border: 2px solid #ccc; border-radius: 8px;
+    padding: 12px 14px; background: #f9f9f9;
+  }
+  .k-card.selected { border-color: #1a4e6e; background: #eaf3fb; box-shadow: 0 2px 8px rgba(0,0,100,0.12); }
+  .k-level { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #1a4e6e; margin-bottom: 4px; }
+  .k-vol { font-size: 1.6rem; font-weight: 800; color: #1a5e20; line-height: 1.1; }
+  .k-vol-range { font-size: 1.05rem; font-weight: 700; color: #1a5e20; }
+  .k-unit { font-size: 0.72rem; color: #666; margin-bottom: 8px; }
+  .k-drugs { font-size: 0.78rem; color: #333; }
+  .k-drugs div { margin-bottom: 2px; }
+  .k-oor { font-size: 0.84rem; color: #b00020; font-style: italic; }
+
+  .ref-title { font-size: 0.9rem; font-weight: bold; color: #14375e; margin-bottom: 6px; margin-top: 4px; }
+  .ref-table th { background: #14375e; color: #fff; }
+  .ref-table td.hl { background: #cde8f7 !important; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<h1>Small Animal Anesthesia Dose &amp; CRI Calculator</h1>
+<div class="app-header">
+  <h1>Small Animal Anesthesia Calculator</h1>
+  <p class="subtitle">Dose · CRI · Kitty Magic &nbsp;|&nbsp; For reference only — always verify with your protocol</p>
+</div>
 
 <div class="tabs">
   <button id="btn-doses" class="active" onclick="showTab('doses')">Dose Calculator</button>
   <button id="btn-cri" onclick="showTab('cri')">CRI Calculator</button>
+  <button id="btn-kitty" onclick="showTab('kitty')">Kitty Magic</button>
 </div>
 
 <!-- ======================= TAB 1: DOSE CALCULATOR ======================= -->
@@ -434,6 +506,60 @@
   </table>
 </div>
 
+<!-- ======================= TAB 3: KITTY MAGIC ======================= -->
+<div id="tab-kitty" class="tab-content">
+  <div class="kitty-alert">
+    <strong>Kitty Magic / DKT / Triple Combination — Extra-label, cats only, given IM.</strong><br />
+    Ketamine (100 mg/mL) + Dexmedetomidine (0.5 mg/mL) + Opioid (select below).<br />
+    Volumes shown are <em>total mL of each individual drug</em>, <strong>NOT mL/kg</strong>.
+    Only use the concentrations listed — do not substitute other formulations.
+  </div>
+
+  <div class="kitty-controls">
+    <div class="kitty-field">
+      <label for="kitty-weight">Cat Weight (kg)</label>
+      <input id="kitty-weight" type="number" step="0.1" min="0" value="4.5" />
+    </div>
+    <div class="kitty-field">
+      <label for="kitty-opioid">Opioid</label>
+      <select id="kitty-opioid">
+        <option value="butorphanol">Butorphanol (10 mg/mL)</option>
+        <option value="hydromorphone">Hydromorphone (2 mg/mL)</option>
+        <option value="buprenorphine">Buprenorphine (0.3 mg/mL)</option>
+      </select>
+    </div>
+    <div class="kitty-field">
+      <label for="kitty-level">Sedation Level</label>
+      <select id="kitty-level">
+        <option value="mild">Mild</option>
+        <option value="moderate" selected>Moderate</option>
+        <option value="profound">Profound</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="kitty-band" id="kitty-band-label"></div>
+  <div class="kitty-cards" id="kitty-result-cards"></div>
+
+  <div class="ref-title">Full Reference Table — mL of each drug (NOT mL/kg) given IM</div>
+  <table class="ref-table">
+    <tr>
+      <th>Cat Body Weight</th>
+      <th>Mild</th>
+      <th>Moderate</th>
+      <th>Profound</th>
+    </tr>
+    <tr id="ref-row-0"><td>2–3 kg</td><td>0.025 mL</td><td>0.05 mL</td><td>0.10–0.15 mL</td></tr>
+    <tr id="ref-row-1"><td>3–4 kg</td><td>0.05 mL</td><td>0.1 mL</td><td>0.20–0.25 mL</td></tr>
+    <tr id="ref-row-2"><td>4–6 kg</td><td>0.1 mL</td><td>0.2 mL</td><td>0.30–0.35 mL</td></tr>
+    <tr id="ref-row-3"><td>6–7 kg</td><td>0.2 mL</td><td>0.3 mL</td><td>0.40–0.45 mL</td></tr>
+    <tr id="ref-row-4"><td>7–8 kg</td><td>0.3 mL</td><td>0.4 mL</td><td>0.50–0.55 mL</td></tr>
+  </table>
+  <p style="font-size:0.78rem; color:#777; margin-top:6px;">
+    * Dexmedetomidine must be 0.5 mg/mL; Ketamine must be 100 mg/mL. Other concentrations should not be substituted.
+  </p>
+</div>
+
 <script>
 /* ---------- DOSE TAB DRUG DATA ---------- */
 const drugs = [
@@ -552,30 +678,128 @@ criFluids.forEach(f => {
   document.getElementById(f.doseId).addEventListener("input", recalcCRI);
 });
 
+/* ---------- KITTY MAGIC ---------- */
+const KM_TABLE = [
+  { min: 2, max: 3, mild: 0.025, mod: 0.05,  pLo: 0.10, pHi: 0.15, rowId: "ref-row-0" },
+  { min: 3, max: 4, mild: 0.05,  mod: 0.10,  pLo: 0.20, pHi: 0.25, rowId: "ref-row-1" },
+  { min: 4, max: 6, mild: 0.10,  mod: 0.20,  pLo: 0.30, pHi: 0.35, rowId: "ref-row-2" },
+  { min: 6, max: 7, mild: 0.20,  mod: 0.30,  pLo: 0.40, pHi: 0.45, rowId: "ref-row-3" },
+  { min: 7, max: 8, mild: 0.30,  mod: 0.40,  pLo: 0.50, pHi: 0.55, rowId: "ref-row-4" },
+];
+
+const KM_OPIOIDS = {
+  butorphanol:   "Butorphanol (10 mg/mL)",
+  hydromorphone: "Hydromorphone (2 mg/mL)",
+  buprenorphine: "Buprenorphine (0.3 mg/mL)"
+};
+
+const KM_LEVELS = [
+  { key: "mild",     label: "Mild",     desc: "Light sedation / restraint" },
+  { key: "moderate", label: "Moderate", desc: "Moderate sedation" },
+  { key: "profound", label: "Profound", desc: "Heavy sedation / anesthesia" }
+];
+
+function kmGetVol(row, levelKey) {
+  if (levelKey === "mild")     return { single: row.mild };
+  if (levelKey === "moderate") return { single: row.mod  };
+  return { lo: row.pLo, hi: row.pHi };
+}
+
+function kmFmtVol(v) {
+  if (v.single !== undefined) {
+    return (v.single < 0.1 ? v.single.toFixed(3) : v.single.toFixed(2)) + " mL";
+  }
+  return v.lo.toFixed(2) + " – " + v.hi.toFixed(2) + " mL";
+}
+
+function recalcKitty() {
+  const wt     = parseFloat(document.getElementById("kitty-weight").value) || 0;
+  const opioid = document.getElementById("kitty-opioid").value;
+  const level  = document.getElementById("kitty-level").value;
+
+  let row = null, rowIdx = -1;
+  for (let i = 0; i < KM_TABLE.length; i++) {
+    const isLast = (i === KM_TABLE.length - 1);
+    if (wt >= KM_TABLE[i].min && (isLast ? wt <= KM_TABLE[i].max : wt < KM_TABLE[i].max)) {
+      row = KM_TABLE[i]; rowIdx = i; break;
+    }
+  }
+
+  /* Highlight matching reference row */
+  KM_TABLE.forEach((r, i) => {
+    document.getElementById(r.rowId).querySelectorAll("td")
+      .forEach(td => td.classList.toggle("hl", i === rowIdx));
+  });
+
+  /* Band label */
+  const bandEl = document.getElementById("kitty-band-label");
+  if (!row) {
+    if (wt <= 0)     bandEl.innerHTML = "Enter a cat weight above.";
+    else if (wt < 2) bandEl.innerHTML = "Weight band: <strong>below table range (&lt; 2 kg)</strong>";
+    else             bandEl.innerHTML = "Weight band: <strong>above table range (&gt; 8 kg)</strong>";
+  } else {
+    bandEl.innerHTML = "Weight band: <strong>" + row.min + "–" + row.max + " kg</strong>";
+  }
+
+  /* Build sedation-level cards */
+  const container = document.getElementById("kitty-result-cards");
+  container.innerHTML = "";
+
+  KM_LEVELS.forEach(lvl => {
+    const card = document.createElement("div");
+    card.className = "k-card" + (lvl.key === level ? " selected" : "");
+
+    let html = `<div class="k-level">${lvl.label}</div>
+                <div style="font-size:0.74rem;color:#777;margin-bottom:6px;">${lvl.desc}</div>`;
+
+    if (!row) {
+      html += `<div class="k-oor">Weight out of table range</div>`;
+    } else {
+      const v      = kmGetVol(row, lvl.key);
+      const volStr = kmFmtVol(v);
+
+      if (v.single !== undefined) {
+        html += `<div class="k-vol">${v.single < 0.1 ? v.single.toFixed(3) : v.single.toFixed(2)}</div>`;
+      } else {
+        html += `<div class="k-vol-range">${v.lo.toFixed(2)} – ${v.hi.toFixed(2)}</div>`;
+      }
+      html += `<div class="k-unit">mL of each drug IM</div>`;
+
+      if (lvl.key === level) {
+        html += `<div class="k-drugs">
+          <div>&#x2022; Ketamine 100 mg/mL: ${volStr}</div>
+          <div>&#x2022; Dexmed 0.5 mg/mL: ${volStr}</div>
+          <div>&#x2022; ${KM_OPIOIDS[opioid]}: ${volStr}</div>
+        </div>`;
+      }
+    }
+
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+document.getElementById("kitty-weight").addEventListener("input", recalcKitty);
+document.getElementById("kitty-opioid").addEventListener("change", recalcKitty);
+document.getElementById("kitty-level").addEventListener("change", recalcKitty);
+
 /* ---------- TAB SWITCHING ---------- */
 function showTab(which) {
-  const dosesTab = document.getElementById("tab-doses");
-  const criTab   = document.getElementById("tab-cri");
-  const btnD     = document.getElementById("btn-doses");
-  const btnC     = document.getElementById("btn-cri");
-
-  if (which === "doses") {
-    dosesTab.classList.add("active");
-    criTab.classList.remove("active");
-    btnD.classList.add("active");
-    btnC.classList.remove("active");
-  } else {
-    criTab.classList.add("active");
-    dosesTab.classList.remove("active");
-    btnC.classList.add("active");
-    btnD.classList.remove("active");
-  }
+  ["doses", "cri", "kitty"].forEach(t => {
+    document.getElementById("tab-" + t).classList.toggle("active", t === which);
+    document.getElementById("btn-" + t).classList.toggle("active", t === which);
+  });
 }
 
 /* Initial calculations */
 recalcDoses();
 recalcCRI();
+recalcKitty();
 </script>
+
+<p style="max-width:1000px; margin:10px auto 0; font-size:0.75rem; color:#999; text-align:center;">
+  For reference only — always verify doses with current formularies, hospital protocols, and the attending clinician. Not a substitute for professional judgment.
+</p>
 
 </body>
 </html>
